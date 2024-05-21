@@ -107,7 +107,7 @@ his team can use to quickly derive insights without needing to join the underlyi
 */
 
 select s.customer_id, s.order_date , m.product_name, m.price,
-		if (s.order_date > mm.join_date, 'Y','N')
+		if (s.order_date > mm.join_date, 'Y','N') as member
 from sales s right join menu m
 on s.product_id = m.product_id
 join members mm 
