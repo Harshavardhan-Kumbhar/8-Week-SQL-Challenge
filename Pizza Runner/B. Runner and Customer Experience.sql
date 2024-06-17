@@ -4,8 +4,7 @@
 SELECT 
     WEEK(registration_date) AS week_of_registration,
     COUNT(runner_id) AS number_of_runner
-FROM
-    runners
+FROM runners
 GROUP BY week_of_registration;
 
 -- What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
@@ -23,14 +22,23 @@ GROUP BY ro.runner_id;
 
 SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
 
+/*
+-- This is error was showing while runnning below query in MySQL
+
+of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cte.order_prep_time'
+ which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by	0.000 sec
+ 
+ so I disabled only_full_group_by mode
+
+*/
+
 WITH cte AS (
-		SELECT count(co.pizza_id) AS pizza_count, 
-			   co.order_id, 
-               round(AVG(TIMESTAMPDIFF(MINUTE, co.order_time, ro.pickup_time)),2) AS order_prep_time
+		SELECT  count(co.pizza_id) AS pizza_count, 
+			co.order_id, 
+               		round(AVG(TIMESTAMPDIFF(MINUTE, co.order_time, ro.pickup_time)),2) AS order_prep_time
 		FROM customer_orders_cleaned co 
-				JOIN
-			 runner_orders_cleaned ro 
-				ON co.order_id = ro.order_id
+		JOIN runner_orders_cleaned ro 
+		ON co.order_id = ro.order_id
 		WHERE ro.pickup_time IS NOT NULL
 		GROUP BY co.order_id)
 SELECT pizza_count,order_prep_time 
@@ -46,7 +54,7 @@ from customer_orders_cleaned co join runner_orders_cleaned ro on co.order_id = r
 where ro.pickup_time is not null
 group by co.order_id;
 
-#create average and standard rows to calculate pearson r value
+-- #create average and standard rows to calculate pearson r value
 
 SELECT 
     @ax:=AVG(order_prep_time),
@@ -55,23 +63,14 @@ SELECT
 FROM
     pearson;
 
-# calculate pearson r value
+-- # calculate pearson r value
 
 SELECT 
     SUM((order_prep_time - @ax) * (pizza_count - @ay)) / ((COUNT(order_prep_time) - 1) * @div) AS pearson_r
 FROM
     pearson;
     
--- pearson r value is '0.277'. This proves that there is a relation between pizza count and preparation time
-/*
--- This is error while runnning above query
-
-of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cte.order_prep_time'
- which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by	0.000 sec
- 
- so we disabled only_full_group_by mode
-
-*/
+--# pearson r value is '0.277'. This proves that there is a relation between pizza count and preparation time
 
 -- What was the average distance travelled for each customer?
 
