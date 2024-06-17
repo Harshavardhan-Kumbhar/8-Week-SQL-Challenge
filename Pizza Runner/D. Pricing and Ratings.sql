@@ -3,9 +3,9 @@ use pizza_runner;
 # 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes:
 -- - how much money has Pizza Runner made so far if there are no delivery fees?
 SELECT SUM(CASE
-				WHEN co.pizza_id = 1 THEN 12
-				ELSE 10
-			END) AS Earned_money
+		WHEN co.pizza_id = 1 THEN 12
+		ELSE 10
+	   END) AS Earned_money
 FROM customer_orders_cleaned co LEFT JOIN
      runner_orders_cleaned ro USING (order_id)
 WHERE ro.cancellation IS NULL;
@@ -14,14 +14,14 @@ WHERE ro.cancellation IS NULL;
 		-- Add cheese is $1 extra
         
   SELECT SUM(CASE
-				WHEN co.pizza_id = 1 THEN 12
-				ELSE 10
-			END) +
+		 WHEN co.pizza_id = 1 THEN 12
+		 ELSE 10
+	      END) +
 		 SUM(CASE
-				WHEN co.extras = 4 THEN 2
-				WHEN co.extras IS NULL THEN 0
-				ELSE 1
-			END) AS updated_money
+			 WHEN co.extras = 4 THEN 2
+			 WHEN co.extras IS NULL THEN 0
+			 ELSE 1
+		     END) AS updated_money
 FROM customer_orders_cleaned co LEFT JOIN
      runner_orders_cleaned ro USING (order_id)
 WHERE ro.cancellation IS NULL;
@@ -57,7 +57,7 @@ SELECT * FROM ratings;
 -- Average speed -- Total number of pizzas
 
 SELECT co.customer_id,
-	   co.order_id,
+       co.order_id,
        ro.runner_id,
        rt.rating,
        co.order_time,
@@ -80,14 +80,14 @@ GROUP BY co.customer_id,
 -- how much money does Pizza Runner have left over after these deliveries?
 
 SELECT SUM(CASE
-				WHEN co.pizza_id = 1 THEN 12
-				ELSE 10
-		   END) AS Revenue,
-	   ROUND(SUM(ro.distance) * 0.3, 2) AS runner_paid,
-	   ROUND(SUM(CASE
-					WHEN co.pizza_id = 1 THEN 12
-					ELSE 10
-				 END) - (SUM(ro.distance) * 0.3),2) AS Money_left
+		WHEN co.pizza_id = 1 THEN 12
+		ELSE 10
+	    END) AS Revenue,
+	ROUND(SUM(ro.distance) * 0.3, 2) AS runner_paid,
+	ROUND(SUM(CASE
+		      WHEN co.pizza_id = 1 THEN 12
+		      ELSE 10
+	          END) - (SUM(ro.distance) * 0.3),2) AS Money_left
 FROM customer_orders_cleaned co JOIN
      runner_orders_cleaned ro USING (order_id)
 WHERE ro.cancellation IS NULL;
