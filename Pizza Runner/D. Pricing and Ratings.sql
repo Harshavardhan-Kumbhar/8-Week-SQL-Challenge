@@ -37,7 +37,7 @@ CREATE TABLE ratings (
 
 INSERT INTO ratings (order_id, rating)
 VALUES (1,3),
-	   (2,5),
+       (2,5),
        (3,3),
        (4,1),
        (5,5),
